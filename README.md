@@ -1,5 +1,5 @@
 # SPTextField
-A beautiful and animating text field. Written in Swift. Underlined UITextField This project is maintained by [Pranavan](https://twitter.com/ImPrana).
+A beautiful and animating text field. Written in Swift. Underlined UITextField. This project is maintained by [Pranavan](https://twitter.com/ImPrana).
 
 <img src="https://github.com/pranavansp/SPTextField/blob/master/file.png" height="150">
 
