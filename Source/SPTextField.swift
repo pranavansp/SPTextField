@@ -1,29 +1,23 @@
 //
-//  LoginTextField.swift
-//  ImageTextfieldUltra
+//  SPTextField.swift
+//  SPTextField
 //
 //  Created by Sivarajah Pranavan on 8/15/17.
-//  Copyright © 2017 Amethyst. All rights reserved.
+//  Copyright © 2017 Pranavan. All rights reserved.
 //
 
 import UIKit
 
 @IBDesignable
-open class LoginTextField: UITextField {
+open class SPTextField: UITextField {
     
-    private let borderThickness: (active: CGFloat, inactive: CGFloat) = (active: 8, inactive: 4)
+    private let borderThickness: (active: CGFloat, inactive: CGFloat) = (active: 3, inactive: 1)
     private let inactiveBorderLayer = CALayer()
     private let activeBorderLayer = CALayer()
     
     @IBInspectable
     var leftImage : UIImage? {
         didSet {
-            updateView()
-        }
-    }
-    @IBInspectable
-    var leftPadding : CGFloat = 0 {
-        didSet{
             updateView()
         }
     }
@@ -46,6 +40,20 @@ open class LoginTextField: UITextField {
             updateBorder()
         }
     }
+    
+    @IBInspectable
+    var alertImage : UIImage? {
+        didSet {
+            updateView()
+        }
+    }
+    
+    @IBInspectable
+    var ImageSize : CGFloat = 30 {
+        didSet{
+            updateView()
+        }
+    }
     override open func willMove(toSuperview newSuperview: UIView!) {
         if newSuperview != nil {
             NotificationCenter.default.addObserver(self, selector: #selector(textFieldDidBeginEditing), name: NSNotification.Name.UITextFieldTextDidBeginEditing, object: self)
@@ -56,11 +64,11 @@ open class LoginTextField: UITextField {
         }
     }
 
+    
     open func textFieldDidBeginEditing() {
         activeBorderLayer.frame = actionForBorder(borderThickness.active, isFilled: true)
         rightViewMode = .never
     }
-
     open func textFieldDidEndEditing() {
         activeBorderLayer.frame = actionForBorder(borderThickness.active, isFilled: false)
         rightViewMode = .never
@@ -68,12 +76,12 @@ open class LoginTextField: UITextField {
 
     private func actionForBorder(_ thickness: CGFloat, isFilled: Bool) -> CGRect {
         if isFilled {
-            return CGRect(origin: CGPoint(x: 30, y: frame.height-thickness), size: CGSize(width: frame.width, height: thickness))
+            return CGRect(origin: CGPoint(x: ImageSize, y: frame.height-thickness), size: CGSize(width: frame.width, height: thickness))
         } else {
-            return CGRect(origin: CGPoint(x: 30, y: frame.height-thickness), size: CGSize(width: 0, height: thickness))
+            return CGRect(origin: CGPoint(x: ImageSize, y: frame.height-thickness), size: CGSize(width: 0, height: thickness))
         }
     }
-    
+
     private func updateBorder() {
         inactiveBorderLayer.frame = actionForBorder(borderThickness.inactive, isFilled: true)
         inactiveBorderLayer.backgroundColor = borderInactiveColor.cgColor
@@ -88,19 +96,44 @@ open class LoginTextField: UITextField {
     private func updateView() {
         if let icon = leftImage{
             leftViewMode = .always
-            let imageView = UIImageView(frame: CGRect(x: leftPadding, y: 0, width: self.view.frame.width, height: self.view.frame.width))
-            var width = leftPadding + 20
+            let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: ImageSize, height: ImageSize))
+            
+            var width = ImageSize + rigthPadding
             
             if borderStyle == UITextBorderStyle.none || borderStyle == UITextBorderStyle.line {
-                    width = width + 5 + rigthPadding
+                    width = width + 5
             }
             imageView.image = icon
             imageView.tintColor = tintColor
-            let view = UIView(frame: CGRect(x: 0, y: 0, width: width, height: 20))
+            let view = UIView(frame: CGRect(x: 0, y: 0, width: width, height: width))
             view.addSubview(imageView)
             leftView = view
         }else{
+
             leftViewMode = .never
         }
+
+        if let alertIcon = alertImage {
+            rightViewMode = .never
+            let alertImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: ImageSize, height: ImageSize))
+            let alertView = UIView(frame:  CGRect(x: 0, y: 0, width: ImageSize+5, height: ImageSize))
+            alertImageView.image = alertIcon
+            alertImageView.tintColor = tintColor
+            alertView.addSubview(alertImageView)
+            rightView = alertView
+        }else{
+            rightViewMode = .never
+        }
+    }
+    
+    public func invalidFieldAlert() {
+        rightViewMode = .unlessEditing
+        let animation = CABasicAnimation(keyPath: "position")
+        animation.duration = 0.05
+        animation.repeatCount = 5
+        animation.autoreverses = true
+        animation.fromValue = NSValue(cgPoint : CGPoint.init(x: self.center.x - 5.0, y: self.center.y))
+        animation.toValue = NSValue(cgPoint : CGPoint.init(x: self.center.x + 5.0, y: self.center.y))
+        layer.add(animation, forKey: "position")
     }
 }
